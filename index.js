@@ -16,7 +16,10 @@ TOKEN = process.env.TOKEN
 let cars = [];
 
 async function parseAndSendDrom() {
-    let dromCars = await DromScrapper.getCars(config.urls[0]);
+    let dromCars = [];
+    for (let i = 0; i < config.urls.length; i++) {
+        dromCars.append(await DromScrapper.getCars(config.urls[0]));
+    }
     let newCarsCount = 0;
     for (let i = 0; i < dromCars.length; i++) {
         // Проверяем есть ли подобная запись в массиве cars
