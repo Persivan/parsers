@@ -10,73 +10,110 @@ const client = new Client({
     ],
 });
 
+const fileSaverReader = require('./tools/file_saver_reader.js');
+
 dotenv.config()
 TOKEN = process.env.TOKEN
 
 let cars = [];
 
-async function parseAndSendDrom() {
-    let dromCars = [];
+/**
+ * Нужно, чтобы прочитать значения из файла
+ * @returns {Promise<void>}
+ */
+async function configure() {
+    cars = await fileSaverReader.read('./temp/cars.txt');       // Читаем массив из файла если он есть
+    if (!cars) cars = [];                                       // Если его нет, создаем пустой массив
+}
+
+async function getAllCars() {
+    let allCars = []
+
+    // Drom
     for (let i = 0; i < config.urls.length; i++) {
-        dromCars.append(await DromScrapper.getCars(config.urls[i]));
+        allCars = allCars.concat(await DromScrapper.getCars(config.urls[i]));
     }
-    let newCarsCount = 0;
-    for (let i = 0; i < dromCars.length; i++) {
-        // Проверяем есть ли подобная запись в массиве cars
-        const exists = cars.find((obj) => obj.url === dromCars[i].url);
-        // Если нет, отправляем ее. При успешной отправки запись добавиться.
-        if (!exists) {
-            newCarsCount++;
-            let errorFlag = false;
-            for (let j = 0; j < config.discordIdes.length; j++) {
-                // Ищем пользователей и отправляем им сообщения
-                await client.users.fetch(config.discordIdes[j])
-                    .then(user => {
-                            console.log(`sending a link: ${dromCars[i].url}`)
 
-                            let msgToSend = dromCars[i].url;
+    return allCars
+}
 
-                            user.send(msgToSend)
+/**
+ * Вернет массив элементов не входящих в главный массив, сравнение идет по параметру arg
+ * @param mainArray
+ * @param secondArray
+ * @param arg
+ * @returns {*}
+ */
+function getUniqueItems(mainArray, secondArray, arg) {
+    return secondArray.filter((item) => {
+        let itemExists = mainArray.some((mainItem) => mainItem[arg] === item[arg]);
+        return !itemExists;
+    });
+}
 
-                                .catch(err => {
-                                    errorFlag = true;
-                                    console.log(err);
-                                })
-                        }
-                    )
-                    .catch(err => {
-                        console.log('error while sending a message')
-                        console.log(err)
-                        errorFlag = true;
-                    })
+async function parseAndSend() {
+    // Получаем машинки со всех сайтов
+    let allCarsFromUrls = await getAllCars();
 
-            }
-            if (!errorFlag) cars.push(dromCars[i])
-            else process.exit(1);
-        }
+    // Берем только те, которые не отправили (отправленные хранятся в cars и в файле ./temp/cars.txt)
+    let newCars = getUniqueItems(cars, allCarsFromUrls, 'url');
+    console.log(`We have ${newCars.length} new cars!`)
+
+    // Отправляем список машинок, которые еще не отправляли
+    let errorFlag = false;
+    for (let j = 0; j < config.discordIdes.length; j++) {   // Перебор по пользователям
+        // Ищем пользователей и отправляем им сообщения
+        await client.users.fetch(config.discordIdes[j])
+            .then(user => {
+                    for (let i = 0; i < newCars.length; i++) {  // Перебор по списку отправляемых ссылок
+                        console.log(`Sending a link: ${newCars[i].url}`)
+                        let msgToSend = newCars[i].url;
+                        user.send(msgToSend)
+                            .catch(err => {
+                                errorFlag = true;
+                                console.log(err);
+                            })
+                    }
+
+                }
+            )
+            .catch(err => {
+                console.log('error while sending a message')
+                console.log(err)
+                errorFlag = true;
+            })
+
     }
-    console.log(`New cars count: ${newCarsCount}`);
+
+    // Обновляем список в программе и в файле
+    if (!errorFlag && newCars.length > 0) {
+        cars = cars.concat(newCars);
+        fileSaverReader.save('temp/cars.txt', cars);
+    }
 }
 
 client.on("ready", async () => {
     console.log(`Entered as ${client.user.tag}`)
-    await parseAndSendDrom()
+
+    // Инициализируем глобальные переменные
+    await configure();
+    
+    await parseAndSend()
     // Каждые 30 секунд полчаса (1800 секунд)
     setInterval(async () => {
         // Парсим страницы
         console.log('parsing again');
-        await parseAndSendDrom();
+        await parseAndSend();
     }, 1800000);
 });
 
 client.login(TOKEN)
 
-client.on("messageCreate", async(message) => {
+client.on("messageCreate", async (message) => {
     // Защита, чтобюы бот не отвечал самому себе
     if (message.author.bot) {
         return;
-    }
-    else if (message.content === "stop") {
+    } else if (message.content === "stop") {
         process.exit(2);
     }
 })
