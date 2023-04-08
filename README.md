@@ -14,7 +14,7 @@ link = 'https://auto.drom.ru/toyota/camry/generation7/?rid[]=74&rid[]=72&rid[]=8
 let dromCars = await DromScrapper.getCars(link); // Output: [{name: "Название обьявления", imgUrl: "Ссыль на превью", url: "Ссылка на обьявление", price: "Цена"}]
 ```
 
-В [index.js](index.js) реализован дискорд бот, уведомляющий о новых обьявлениях с дрома. [config_exmaple.js](config_example.js) содержит пример. Как ссылок, там и пользователей может быть несколько.
+В [index.js](index.js) реализован дискорд бот, уведомляющий о новых обьявлениях с дрома. [config_exmaple.js](config_example.js) содержит пример. Как ссылок, таr и пользователей может быть несколько.
 
 Источники
 =
