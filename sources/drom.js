@@ -6,7 +6,7 @@ const sourceName = 'Drom';
 const baseUrl = 'https://www.drom.ru/';
 
 const DromScrapper = {
-    async getCars(url, page) {
+    async getCars(url) {
         console.log(`DromScrapper.getCars: started...`);
         const result = await fetch(url);
         const body = await result.text();
