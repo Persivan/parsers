@@ -1,0 +1,22 @@
+[
+  {
+    "id": 0,
+    "sourceName": "RanobeLib",
+    "baseUrl": "https://ranobelib.me"
+  },
+  {
+    "id": 1,
+    "sourceName": "Avito",
+    "baseUrl": "https://www.avito.ru/"
+  },
+  {
+    "id": 2,
+    "sourceName": "Drom",
+    "baseUrl": "https://www.drom.ru/"
+  },
+  {
+    "id": 3,
+    "sourceName": "Aliexpress",
+    "baseUrl": "https://aliexpress.ru/"
+  }
+]
