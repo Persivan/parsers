@@ -8,7 +8,7 @@ const baseUrl = 'https://aliexpress.ru/';
 
 const AliexpressScrapper = {
     async getGoodInfo(urls) {
-        const browser = await Puppeteer.launch({ headless: false, defaultViewport: { width: 1366, height: 768 } });
+        const browser = await Puppeteer.launch({ headless: true, defaultViewport: { width: 1366, height: 768 } });
         const page = await browser.newPage();
         const prices = [];
 
@@ -24,7 +24,13 @@ const AliexpressScrapper = {
     },
 
     async getPrice(page, url) {
-        await page.goto(url);
+        // aliexpress endless loading!
+        try {
+            await page.goto(url, {timeout: 120000});
+        }
+        catch(error) {
+            console.log(error);
+        }
         await page.waitForSelector('.snow-price_SnowPrice__mainS__1cmks6');
         return await page.$eval('.snow-price_SnowPrice__mainS__1cmks6', element => element.textContent);
     },

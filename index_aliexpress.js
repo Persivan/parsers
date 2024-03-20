@@ -1,7 +1,9 @@
 const links = [
     'https://aliexpress.ru/item/1005003571974003.html',
-    'https://aliexpress.ru/item/1005005992933627.html',
-    'https://aliexpress.ru/item/1005003571974003.html?sku_id=12000034752422272&spm=a2g2w.stores.seller_list.0.34a86665CKbIVo'
+    'https://aliexpress.ru/item/1005003571974003.html?sku_id=12000034752422272',
+    'https://aliexpress.ru/item/1005003571974003.html?sku_id=12000034752422268',
+    'https://aliexpress.ru/item/1005003571974003.html?sku_id=12000034156956313',
+    'https://aliexpress.ru/item/1005005853953314.html',
 ]
 const csvFile = 'example.csv';
 
