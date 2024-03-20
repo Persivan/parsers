@@ -1,3 +1,5 @@
 .env
 .config
 example.csv
+node_modules
+.idea
