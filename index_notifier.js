@@ -33,7 +33,16 @@ client.on("messageCreate", async (message) => {
         const lastTenPrices = getLastTenPrices(dynamics);
         message.reply('Last Ten Prices:\n' + util.inspect(lastTenPrices, { depth: null, colors: false }))
             .then(message => console.log(`Sent message: ${message.content}`))
-            .catch(console.error);
+            .catch((err) => {
+                if (content.length > 2000) {
+                    // Create a Buffer and send as an attachment
+                    const buffer = Buffer.from(content, 'utf-8');
+                    const attachment = new AttachmentBuilder(buffer, { name: 'prices.txt' });
+                    message.reply({ files: [attachment] })
+                      .then(() => console.log('Sent message as a file because it\'s too big'))
+                      .catch(console.error);  
+                }              
+            });
     }
     else if (message.content === 'проверка спам атаки ♥') {
         if (!channelToSpam) {
@@ -81,7 +90,7 @@ async function readCSV() {
             
             // If price has changed, log the product, new price, and old price
 
-            if (oldPrice.Price !== newPrice.Price) {
+            if (oldPrice && oldPrice.Price !== newPrice.Price) {
                 channelToSpam.send(`Price changed for ${link}. Old price: ${oldPrice.Price} New price: ${newPrice.Price}`)
                     .then(message => console.log(`Sent message: ${message.content}`))
                     .catch(console.error);
@@ -127,7 +136,7 @@ function parseCSV(filePath) {
                     const priceHistory = priceDynamics[link];
 
                     // Sort by date
-                    priceHistory.sort((a, b) => a.date - b.date);
+                    priceHistory.sort((a, b) => b.date - a.date);
 
                     // Filter out consecutive entries with the same price
                     filteredDynamics[link] = priceHistory.filter((entry, index, arr) => {

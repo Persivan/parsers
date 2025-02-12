@@ -1,6 +1,7 @@
 const links = [
     'https://aliexpress.ru/item/1005007383923208.html',
-    'https://aliexpress.ru/item/1005007369756529.html'
+    'https://aliexpress.ru/item/1005007369756529.html',
+    'https://aliexpress.ru/item/1005005862078320.html'
 ]
 const csvFile = 'example.csv';
 

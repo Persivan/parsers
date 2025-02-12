@@ -29,10 +29,10 @@ const AliexpressScrapper = {
             await page.goto(url, {timeout: 15000});
         }
         catch(error) {
-            console.log(error);
+            console.log('Timeout error (вроде не важно)');
         }
-        await page.waitForSelector('.HazeProductPrice_SnowPrice__mainS__k8qlm');
-        return await page.$eval('.HazeProductPrice_SnowPrice__mainM__k8qlm', element => element.textContent);
+        await page.waitForSelector('.HazeProductPrice_SnowPrice__mainS__1cbja');
+        return await page.$eval('.HazeProductPrice_SnowPrice__mainS__1cbja', element => element.textContent);
     },
 
     // Function to sleep for a given number of milliseconds
